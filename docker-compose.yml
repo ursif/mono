@@ -1,8 +1,23 @@
 version: '3'
 services:
+    # Shared Auth Service
     auth:
       container_name: ursif_auth
       build:
         context: ./modules/auth
       ports:
         - "9999:6379"
+    
+    # Singular User Actor
+    user:
+      container_name: ursif_user
+      build:
+        context: ./modules/user
+    
+    # Singular User' Posts State
+    posts:
+      container_name: ursif_posts
+      build:
+        context: ./modules/posts
+      ports:
+        - "9998:27017"

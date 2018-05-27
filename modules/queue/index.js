@@ -1,7 +1,17 @@
-const { promisify } = require('util')
-const redis = require('redis')
 const withDefaults = require('with-defaults')
+const getCacheFunctions = require('./modules/cacheFunctions')
+const createCache = require('./modules/createCache')
+const defaultRetryStrategy = require('./modules/retryJobs')
 const createJob = require('../job')
+
+/**
+ * @typedef {Object} QueueDefaults
+ * 
+ * @prop {string} queueName - Name of queue
+ * @prop {string} requeueName - Name of requeue
+ * @prop {Object} config - Config to pass to redis
+ * @prop {function(cache, config) => cache} retyStrategy - Strategy for retrying 
+ */
 
 const queueDefaults = withDefaults({
     queueName: 'ursif_queue',
@@ -9,29 +19,49 @@ const queueDefaults = withDefaults({
     config: {
         port: 9996,
         host: 'localhost'
-    }
+    },
+    retryStrategy: defaultRetryStrategy
 })
+/**
+ * @typedef {Object} Queue
+ * 
+ * @prop {function(event) => Promise<Job>} add - Add a job to the queue
+ * @prop {function() => Promise<Job>} next - Gets the next job from the queu
+ * @prop {function(job) => Promise<Job>} finish - Removes a job from the system
+ * @prop {function() => Promise<Count>} count - Get the count of all jobs
+ * @prop {function() => Promise<Ok>} drop - Clear the queueues
+ * @prop {function(string) => Promise<Ok>} clear - Clears one queue
+ */
 /**
  * A queue is a list of remaing
  * jobs that a consumer can 
  */
+
+ /**
+  * @param {QueueDefaults} opts - Queue Options
+  * 
+  * @return {Queue}
+  */
 const queue = (opts = {}) => {
     const {
         queueName,
         requeueName,
         config,
+        retryStrategy,
     } = queueDefaults(opts)
 
-    const cache = redis.createClient({
-        port: config.port,
-        host: config.host,
+    const cache = retryStrategy(createCache(config), {
+        queueName,
+        requeueName
     })
 
-    const push = promisify(cache.rpush).bind(cache)
-    const pop = promisify(cache.brpoplpush).bind(cache)
-    const remove = promisify(cache.lrem).bind(cache)
-    const length = promisify(cache.llen).bind(cache)
-    const drop = promisify(cache.del).bind(cache)
+    const {
+        push,
+        pop,
+        remove,
+        length,
+        drop,
+    } = getCacheFunctions(cache)
 
     return ({
         // Add a job to the queue
@@ -46,7 +76,7 @@ const queue = (opts = {}) => {
         },
         // Get a job from the queue
         next: async () => {
-            const unparsedJob = await pop(queueName, requeueName, 1000)
+            const unparsedJob = await pop(queueName, requeueName, 100)
             if (unparsedJob) {
                 return JSON.parse(unparsedJob)
             }
@@ -55,7 +85,7 @@ const queue = (opts = {}) => {
         },
         // Finish a job taken from the queue
         finish: job => remove(requeueName, -1, JSON.stringify(job)),
-        // Get count of both queue
+        // Get count of both queues
         count: () => Promise.all([
             length(queueName),
             length(requeueName)
@@ -63,7 +93,7 @@ const queue = (opts = {}) => {
             queueLength: qL,
             requeueLength: rL
         })),
-        // Clear all queue
+        // Clear all queues
         drop: () => Promise.all([
             drop(queueName),
             drop(requeueName)
@@ -71,7 +101,7 @@ const queue = (opts = {}) => {
             queue: d,
             requeue: i
         })),
-        // clear one queue defaults to add queue
+        // Clear one queue; defaults to ReadQueue
         clear: (queue = queueName) => drop(queueName) 
     })
 }

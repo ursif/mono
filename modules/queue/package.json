@@ -1,0 +1,11 @@
+{
+  "name": "@ursif/queue",
+  "version": "0.0.0",
+  "description": "A job queue using Redis",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "redis": "^2.8.0",
+    "with-defaults": "^0.0.1"
+  }
+}

@@ -1,7 +1,8 @@
 {
-  "name": "ursif",
+  "name": "@ursif/mono",
   "version": "0.0.0",
   "main": "index.js",
+  "description": "A blogging platform built using microservices",
   "author": "Tim Roberts <timiroberts@gmail.com>",
   "license": "MIT",
   "devDependencies": {

@@ -23,6 +23,7 @@ You will now have to go into each `module` and run `yarn start`. _**Note**_: Thi
 `ursif` is a blogging platform built on microservices, because why not? It is composed of
 
 * `@usrif/auth`: An authorization service for creating opaque reference tokens for clients and JWTs for internal services
+* `@ursif/logger`: A helper module for logging ( _not for Event Sourcing_ )
 * `@ursif/user`: A service for keeping the state of the User
 * `@ursif/posts`: A service for keeping the state of the Posts of the User
 * `@ursif/messages`: A service for keeping the state of the Messages of the User
@@ -33,6 +34,7 @@ You will now have to go into each `module` and run `yarn start`. _**Note**_: Thi
 
 * [x] - Auth Service Skeleton
 * [x] - Posts Service Skeleton
+* [x] - Logger Skeleton
 * [ ] - User Service Skeleton
 * [ ] - Messages Service Skeleton
 * [ ] - Dashboard Service Skeleton

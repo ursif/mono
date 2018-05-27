@@ -8,18 +8,18 @@ services:
       ports:
         - "9999:6379"
     
-    # Singular User's Posts
-    posts:
-      container_name: ursif_posts
+    # REST Storage Interface
+    rest:
+      container_name: ursif_rest
       build:
-        context: ./modules/posts
+        context: ./modules/rest
       ports:
         - "9998:27017"
 
-    user:
-      container_name: ursif_user
-      build:
-        context: ./modules/user
-      ports:
-        - "9996:6379"
+    # user:
+    #   container_name: ursif_user
+    #   build:
+    #     context: ./modules/user
+    #   ports:
+    #     - "9996:6379"
     

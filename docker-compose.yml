@@ -15,4 +15,11 @@ services:
         context: ./modules/posts
       ports:
         - "9998:27017"
+
+    user:
+      container_name: ursif_user
+      build:
+        context: ./modules/user
+      ports:
+        - "9996:6379"
     

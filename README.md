@@ -29,6 +29,14 @@ You will now have to go into each `module` and run `yarn start`. _**Note**_: Thi
 * `@ursif/graph`: A service for connecting many `ursif` networks
 * `@ursif/dashboard`: A service for viewing the `@ursif/graph` of different networks
 
+## TODO
+
+* [x] - Auth Service Skeleton
+* [x] - Posts Service Skeleton
+* [ ] - User Service Skeleton
+* [ ] - Messages Service Skeleton
+* [ ] - Dashboard Service Skeleton
+
 ## Code of Conduct
 
 Don't be a doo-doo head. If you need more than that, please read the [Code of Conduct](./CODE_OF_CONDUCT.md).

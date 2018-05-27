@@ -1,6 +1,6 @@
 {
   "name": "ursif",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "index.js",
   "author": "Tim Roberts <timiroberts@gmail.com>",
   "license": "MIT",
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "docker-compose up",
-    "start:auth": "node modules/auth/index.js"
+    "start:auth": "node modules/auth/index.js",
+    "start:posts": "node modules/posts/index.js"
   }
 }

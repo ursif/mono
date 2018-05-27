@@ -8,16 +8,17 @@ services:
       ports:
         - "9999:6379"
     
-    # Singular User Actor
-    user:
-      container_name: ursif_user
-      build:
-        context: ./modules/user
-    
-    # Singular User' Posts State
+    # Singular User's Posts
     posts:
       container_name: ursif_posts
       build:
         context: ./modules/posts
       ports:
         - "9998:27017"
+
+    # Singular User Actor
+    # user:
+    #   container_name: ursif_user
+    #   build:
+    #     context: ./modules/user
+    

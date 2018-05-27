@@ -8,6 +8,7 @@
     "lerna": "^2.11.0"
   },
   "scripts": {
-    "start": "docker-compose up"
+    "start": "docker-compose up",
+    "start:auth": "node modules/auth/index.js"
   }
 }

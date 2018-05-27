@@ -5,7 +5,11 @@ const timeconverter = require('@mck-p/time-converter')
 const AUTH_SALT_ROUNDS = process.env.SALT_ROUNDS || 5
 const JWT_SECRET = process.env.JWT_SECRET || 'My super secret key!'
 
-const createOpToken = (user) => bcrypt.hash(JSON.stringify(user), AUTH_SALT_ROUNDS)
+const createOpToken = (user) => bcrypt.hash(`
+OPAQUE_REFERENCE_TOKEN:
+${JSON.stringify(user)}:
+${Date.now()}
+`, AUTH_SALT_ROUNDS)
 
 const createJWT = user => jwt.sign(user, JWT_SECRET, {
     expiresIn: timeconverter

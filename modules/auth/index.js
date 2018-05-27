@@ -25,11 +25,11 @@ server.app.get('/', async (req, res) => {
     })
 })
 
-// User -> Opaque Reference Token
+// Context -> Opaque Reference Token
 server.app.post('/', async (req, res) => {
-    const { user } = req.body
-    const token = await tokens.createOpToken(user)
-    const jwt = await tokens.createJWT(user)
+    const { context } = req.body
+    const token = await tokens.createOpToken(context)
+    const jwt = await tokens.createJWT(context)
     const didSet = await cache.set(token, jwt)
 
     if(!didSet) {
@@ -42,6 +42,26 @@ server.app.post('/', async (req, res) => {
 
     res.json({
         token
+    })
+})
+
+// Opaque Reference Token -> Opaque Reference Token
+server.app.patch('/', async (req, res) => {
+    const authtoken = req.headers.authtoken
+    const { context } = req.body
+    const jwt = await tokens.createJWT(context)
+    const didSet = await cache.set(authtoken, jwt)
+
+    if(!didSet) {
+        return res.status(400).json({
+            error: {
+                message: 'Error authorizing'
+            }
+        })
+    }
+
+    res.json({
+        token: authtoken
     })
 })
 

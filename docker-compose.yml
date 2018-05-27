@@ -1,0 +1,8 @@
+version: '3'
+services:
+    auth:
+      container_name: ursif_auth
+      build:
+        context: ./modules/auth
+      ports:
+        - "9999:6379"

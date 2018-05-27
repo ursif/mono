@@ -1,9 +1,20 @@
+const redis = require('redis')
 // Reference to Cache
-const cache = new Map()
+const cache = redis.createClient({
+    port: process.env.AUTH_REDIS_PORT || 9999
+})
 // API for cache
 module.exports = {
-    get: (...args) => Promise.resolve(cache.get(...args)),
-    set: (...args) => Promise.resolve(cache.set(...args)),
-    has: (...args) => Promise.resolve(cache.has(...args)),
-    delete: (...args) => Promise.resolve(cache.delete(...args))
+    get: (key) => new Promise((res, rej) => {
+        cache.get(key, (err, d) => err ? rej(err) : res(d))
+    }),
+    set: (token, jwt) => new Promise((res, rej) => {
+        cache.set(token, jwt, (err, d) => err ? rej(err) : res(d))
+    }),
+    has: (token) => new Promise((res, rej) => {
+        cache.has(token, (e, d) => e ? rej(e) : res(d))
+    }),
+    delete: (token) => new Promise((res, rej) => {
+        cache.delete(token, (e, d) => e ? rej(e) : res(d))
+    })
 }

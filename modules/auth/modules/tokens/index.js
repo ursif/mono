@@ -2,10 +2,10 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const timeconverter = require('@mck-p/time-converter')
 
-const SALT_ROUNDS = process.env.SALT_ROUNDS || 5
-const JWT_SECRET = process.env.JWT_SECRET || 'My super secrete key!'
+const AUTH_SALT_ROUNDS = process.env.SALT_ROUNDS || 5
+const JWT_SECRET = process.env.JWT_SECRET || 'My super secret key!'
 
-const createOpToken = (user) => bcrypt.hash(JSON.stringify(user), SALT_ROUNDS)
+const createOpToken = (user) => bcrypt.hash(JSON.stringify(user), AUTH_SALT_ROUNDS)
 
 const createJWT = user => jwt.sign(user, JWT_SECRET, {
     expiresIn: timeconverter
@@ -14,7 +14,9 @@ const createJWT = user => jwt.sign(user, JWT_SECRET, {
         issuer: '@ursif'
 })
 
-const verifyJWT = possibleJWT => jwt.verify(possibleJWT, JWT_SECRET,)
+const verifyJWT = possibleJWT => jwt.verify(possibleJWT, JWT_SECRET, {
+    issuer: '@ursif'
+})
 
 module.exports = {
     createOpToken,

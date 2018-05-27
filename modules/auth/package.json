@@ -1,0 +1,25 @@
+{
+  "name": "@ursif/auth",
+  "version": "0.0.0",
+  "description": "Authorization service",
+  "main": "index.js",
+  "author": "Tim Roberts <timiroberts@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@mck-p/time-converter": "^0.0.2",
+    "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "express-winston": "^2.5.1",
+    "jsonwebtoken": "^8.2.1",
+    "winston": "^2.4.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  }
+}

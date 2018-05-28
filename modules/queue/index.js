@@ -84,7 +84,8 @@ const queue = (opts = {}) => {
             return unparsedJob
         },
         // Finish a job taken from the queue
-        finish: job => remove(requeueName, -1, JSON.stringify(job)),
+        finish: (job, count = 1) =>
+            remove(requeueName, count * -1, JSON.stringify(job)),
         // Get count of both queues
         count: () => Promise.all([
             length(queueName),

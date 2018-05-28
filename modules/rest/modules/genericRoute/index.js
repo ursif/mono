@@ -33,7 +33,8 @@ GenericRoute.get('/:collection', (req, res) => {
 
 // Drop a whole collection
 GenericRoute.delete('/:collection', (req, res) => {
-    req.db.drop(req.params.collection)
+    req.db.collection(req.params.collection)
+        .drop()
         .then(data => res.json({ data }))
         .catch(error => res.status(400).json({
             error: {
@@ -60,7 +61,15 @@ GenericRoute.post('/:collection', (req, res) => {
         return req.db
             .collection(collection)
             .insertOne(resource)
-            .then(data => res.json({ data }))
+            .then(({ ops, result }) => {
+                if(!result.ok) {
+                    throw new Error('INSERT_ERROR')
+                }
+
+                res.json({
+                    data: ops
+                })
+            })
             .catch(error => res.status(400).json({
                 error: {
                     message: error.message

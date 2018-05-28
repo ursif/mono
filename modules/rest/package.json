@@ -1,7 +1,7 @@
 {
   "name": "@ursif/rest",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "modules/index.js",
   "description": "A REST interface to a MongoDB instance",
   "license": "MIT",
   "dependencies": {
@@ -17,5 +17,6 @@
   },
   "scripts": {
     "dev": "nodemon example.js"
-  }
+  },
+  "private": false
 }

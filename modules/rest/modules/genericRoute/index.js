@@ -35,7 +35,7 @@ GenericRoute.get('/:collection', (req, res, next) => {
         .find(query)
         .toArray()
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -45,7 +45,7 @@ GenericRoute.delete('/:collection', (req, res, next) => {
         .drop()
         .then(getResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -70,7 +70,7 @@ GenericRoute.post('/:collection', (req, res, next) => {
             .insertOne(resource)
             .then(getPost)
             .then(JSONAPI.response(res))
-            .then(next)
+            .then(() => next())
             .catch(JSONAPI.error(res))
     }
 
@@ -79,7 +79,7 @@ GenericRoute.post('/:collection', (req, res, next) => {
         .insertMany(resources)
         .then(getPost)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -91,7 +91,7 @@ GenericRoute.get('/:collection/:id', (req, res, next) => {
         .collection(collection)
         .findOne({ _id: objectId(id) })
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -117,7 +117,7 @@ GenericRoute.patch('/:collection/:id', (req, res, next) => {
         })
         .then(getUpdateResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -143,7 +143,7 @@ GenericRoute.put('/:collection/:id', (req, res, next) => {
         })
         .then(getUpdateResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -156,7 +156,7 @@ GenericRoute.delete('/:collection/:id', (req, res, next) => {
         .findOneAndDelete({ _id: objectId(id) })
         .then(getUpdateResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 

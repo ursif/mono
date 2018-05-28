@@ -3,10 +3,10 @@ const { MongoClient } = mongo
 
 const { env } = process
 const {
-    REST_DB_HOST = '0.0.0.0',
-    REST_DB_PORT = 9998,
+    REST_DB_HOST = 'localhost',
+    REST_DB_PORT = 9997,
     REST_DB_NAME = 'ursif_posts',
-    REST_SERVER_PORT = 5000,
+    REST_SERVER_PORT = 5001,
 } = env
 
 const url = `mongodb://${REST_DB_HOST}:${REST_DB_PORT}`

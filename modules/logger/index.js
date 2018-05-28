@@ -36,11 +36,11 @@ const canRun = (level) => {
 /**
  * Creates a formatted log message
  * 
- * @example: Log Format: `[LEVEL]:[TIMESTAMP]:[title]:<message>
+ * @example: Log Format: `[PID]:[LEVEL]:[TIMESTAMP]:[title]:<message>`
  * @return {string}
  */
 const createLog = ({ title = '', message = '', level = 'debug' }) =>
-    `[${level.toUpperCase()}]:[${Date.now()}]:[${title}]:${message}` 
+    `[${process.pid}]:[${level.toUpperCase()}]:[${Date.now()}]:[${title}]:${message}` 
 
 /**
  * @typedef {Object} LogMessage
@@ -60,24 +60,41 @@ const createLog = ({ title = '', message = '', level = 'debug' }) =>
  */
 
 
-/**
- * @type {Logger}
- */
-const logger = [
+const logLevels =[
     'debug',
     'info',
     'warn',
     'error'
-].reduce((a, c) => ({
+]
+
+const createLogger = fn => logLevels.reduce((a, c) => ({
     ...a,
-    [c]: ({
-        title = `${c.toUpperCase()}:ursif`,
-        message,
-    }) => canRun(c) && console.log(createLog({
-        title,
-        message,
-        level: c
-    }))
+    [c]: (msg) => {
+        let message = `${c.toUpperCase()}:MESSAGE`
+        let title = `${c.toUpperCase()}:TITLE`
+
+        if (msg && typeof msg === 'string') {
+            message = msg
+            title = `${c.toUpperCase()}:ursif`
+        } else if (msg) {
+            message = msg.message || message
+            title = msg.title || title
+        }
+
+        return canRun(c) && fn(createLog({
+            title,
+            message,
+            level: c
+        }))
+    }
 }), {})
 
-module.exports = logger
+/**
+ * @type {Logger}
+ */
+const logger = createLogger(console.log)
+
+
+module.exports = Object.assign(logger, {
+    createLogger
+})

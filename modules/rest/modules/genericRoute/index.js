@@ -1,45 +1,32 @@
-const { Router } = require('express')
-const { ObjectId } = require('mongodb')
-const GenericRoute = new Router()
+const route = require('./modules/router')
+const objectId = require('./modules/objectId')
+const GenericRoute = route()
 
-const DB_ERROR = () => {
-    const err =new Error('DB_ERROR')
-    
-    err.code = 500
+const {
+    JSONAPI,
+    isBadPost,
+    isBadPut,
+    isBadPatch,
+    DB_ERROR,
+    getPost,
+    getUpdateResult
+} = require('./modules/utils')
 
-    return err
-}
-
-const getPost = ({ ops, result }) => {
-    if (!result.ok) {
-        throw DB_ERROR()
-    }
-
-    return ops
-}
-
-const getUpdateResult = ({ value, ok }) => {
-    if(!ok) {
-        throw DB_ERROR()
-    }
-
-    return value
-}
-
-GenericRoute.get('/', (req, res) => {
-    req.db.listCollections()
+GenericRoute.get('/', (req, res, next) => {
+    req.db
+        .listCollections()
         .toArray()
-        .then(collections => res.json({ data: collections }))
-        .catch(err => res.status(400).json({
-            error: {
-                message: err.message,
-                code: err.code
-            }
+        .then(JSONAPI.response(res,{
+            quote: 'Thanks for stopping by!'
+        }))
+        .then(() => next())
+        .catch(JSONAPI.error(res, {
+            quote: 'You got served!'
         }))
 })
 
 // Query a single collection
-GenericRoute.get('/:collection', (req, res) => {
+GenericRoute.get('/:collection', (req, res, next) => {
     const query = req.parsedQuery
     const { collection } = req.params
 
@@ -47,135 +34,130 @@ GenericRoute.get('/:collection', (req, res) => {
         .collection(collection)
         .find(query)
         .toArray()
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // Drop a whole collection
-GenericRoute.delete('/:collection', (req, res) => {
+GenericRoute.delete('/:collection', (req, res, next) => {
     req.db.collection(req.params.collection)
         .drop()
         .then(getResult)
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // Add a resource or multiple resources
 // to a collection
-GenericRoute.post('/:collection', (req, res) => {
+GenericRoute.post('/:collection', (req, res, next) => {
     const { collection } = req.params
-    const { resource, resources } = req.body
 
-    if ((!resources || !Array.isArray(resources)) && !resource) {
-        return res.status(400).json({
-            error: {
-                message: 'No data to insert!'
-            }
+    if (isBadPost(req.body)) {
+        return JSONAPI.error(res, {
+            placement: 'COLLECTION_POST'
+        })({
+            message: 'You must give me a Body.resource or a Body.resources value'
         })
     }
+
+    const { resource, resources } = req.body
 
     if (!resources) {
         return req.db
             .collection(collection)
             .insertOne(resource)
             .then(getPost)
-            .then(data => res.json({ data }))
-            .catch(error => res.status(400).json({
-                error: {
-                    message: error.message
-                }
-            }))
+            .then(JSONAPI.response(res))
+            .then(next)
+            .catch(JSONAPI.error(res))
     }
 
     return req.db
         .collection(collection)
         .insertMany(resources)
         .then(getPost)
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // Gets a single resource by ID
-GenericRoute.get('/:collection/:id', (req, res) => {
+GenericRoute.get('/:collection/:id', (req, res, next) => {
     const { collection, id } = req.params
-    console.log(id, 'id?')
+
     req.db
         .collection(collection)
-        .findOne({ _id: new ObjectId(id) })
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .findOne({ _id: objectId(id) })
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // Updates a resource by ID
-GenericRoute.patch('/:collection/:id', (req, res) => {
+GenericRoute.patch('/:collection/:id', (req, res, next) => {
     const { collection, id } = req.params
+
+    if (isBadPatch(req.body)) {
+        return JSONAPI.error(res, {
+            position: 'COLLECTION_PATCH'
+        })({
+            message: 'You must give me a Body.update value'
+        })
+    }
+
     const { update } = req.body
 
     req.db
         .collection(collection)
-        .findOneAndUpdate({ _id: new ObjectId(id) }, update, {
+        .findOneAndUpdate({ _id: objectId(id) }, update, {
             upsert: true,
             returnOriginal: false
         })
         .then(getUpdateResult)
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // Replaces a resource by ID
-GenericRoute.put('/:collection/:id', (req, res) => {
+GenericRoute.put('/:collection/:id', (req, res, next) => {
     const { collection, id } = req.params
+
+    if (isBadPut(req.body)) {
+        return JSONAPI.error(res, {
+            position: 'COLLECTION_PUT'
+        })({
+            message: 'You must give me a Body.replacement'
+        })
+    }
+
     const { replacement } = req.body
 
     req.db
         .collection(collection)
-        .findOneAndReplace({ _id: new ObjectId(id) }, replacement, {
+        .findOneAndReplace({ _id: objectId(id) }, replacement, {
             upsert: true,
             returnOriginal: false
         })
         .then(getUpdateResult)
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // Deletes a resource by ID
-GenericRoute.delete('/:collection/:id', (req, res) => {
+GenericRoute.delete('/:collection/:id', (req, res, next) => {
     const { collection, id } = req.params
 
     req.db
         .collection(collection)
-        .findOneAndDelete({ _id: new ObjectId(id) })
+        .findOneAndDelete({ _id: objectId(id) })
         .then(getUpdateResult)
-        .then(data => res.json({ data }))
-        .catch(error => res.status(400).json({
-            error: {
-                message: error.message
-            }
-        }))
+        .then(JSONAPI.response(res))
+        .then(next)
+        .catch(JSONAPI.error(res))
 })
 
 // The Generic Route is a CRUD

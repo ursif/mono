@@ -2,13 +2,15 @@ version: '3'
 services:
     # Shared Auth Service
     auth:
-      container_name: ursif_auth
+      container_name: ursif.auth
       build:
         context: ./modules/auth
       ports:
         - "9999:6379"
     
     # REST Storage Interface
+    # Will be a single url for each
+    # Node in the system
     rest:
       container_name: ursif.rest
       build:

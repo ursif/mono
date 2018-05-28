@@ -2,7 +2,7 @@
   "name": "@ursif/auth",
   "version": "0.0.0",
   "description": "Authorization service",
-  "main": "index.js",
+  "main": "modules/index.js",
   "author": "Tim Roberts <timiroberts@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -17,7 +17,6 @@
     "winston": "^2.4.2"
   },
   "devDependencies": {
-    "jest": "^23.0.1",
     "nodemon": "^1.17.5"
   },
   "scripts": {

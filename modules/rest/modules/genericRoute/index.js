@@ -12,7 +12,7 @@ const {
     getUpdateResult
 } = require('./modules/utils')
 
-GenericRoute.get('/', (req, res, next) => {
+GenericRoute.get('/', (req, res, next) => 
     req.db
         .listCollections()
         .toArray()
@@ -23,16 +23,21 @@ GenericRoute.get('/', (req, res, next) => {
         .catch(JSONAPI.error(res, {
             quote: 'You got served!'
         }))
-})
+)
 
 // Query a single collection
 GenericRoute.get('/:collection', (req, res, next) => {
     const query = req.parsedQuery
     const { collection } = req.params
 
+    const queryOptions = {
+        limit: query.limit || 10,
+        skip: query.offset || 0,
+    }
+
     req.db
         .collection(collection)
-        .find(query)
+        .find(query, queryOptions)
         .toArray()
         .then(JSONAPI.response(res))
         .then(() => next())
@@ -40,14 +45,15 @@ GenericRoute.get('/:collection', (req, res, next) => {
 })
 
 // Drop a whole collection
-GenericRoute.delete('/:collection', (req, res, next) => {
-    req.db.collection(req.params.collection)
+GenericRoute.delete('/:collection', (req, res, next) => 
+    req.db
+        .collection(req.params.collection)
         .drop()
         .then(getResult)
         .then(JSONAPI.response(res))
         .then(() => next())
         .catch(JSONAPI.error(res))
-})
+)
 
 // Add a resource or multiple resources
 // to a collection

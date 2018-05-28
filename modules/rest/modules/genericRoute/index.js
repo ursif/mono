@@ -12,7 +12,7 @@ const {
     getUpdateResult
 } = require('./modules/utils')
 
-GenericRoute.get('/', (req, res, next) => {
+GenericRoute.get('/', (req, res, next) => 
     req.db
         .listCollections()
         .toArray()
@@ -23,31 +23,37 @@ GenericRoute.get('/', (req, res, next) => {
         .catch(JSONAPI.error(res, {
             quote: 'You got served!'
         }))
-})
+)
 
 // Query a single collection
 GenericRoute.get('/:collection', (req, res, next) => {
     const query = req.parsedQuery
     const { collection } = req.params
 
+    const queryOptions = {
+        limit: query.limit || 10,
+        skip: query.offset || 0,
+    }
+
     req.db
         .collection(collection)
-        .find(query)
+        .find(query, queryOptions)
         .toArray()
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
 // Drop a whole collection
-GenericRoute.delete('/:collection', (req, res, next) => {
-    req.db.collection(req.params.collection)
+GenericRoute.delete('/:collection', (req, res, next) => 
+    req.db
+        .collection(req.params.collection)
         .drop()
         .then(getResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
-})
+)
 
 // Add a resource or multiple resources
 // to a collection
@@ -70,7 +76,7 @@ GenericRoute.post('/:collection', (req, res, next) => {
             .insertOne(resource)
             .then(getPost)
             .then(JSONAPI.response(res))
-            .then(next)
+            .then(() => next())
             .catch(JSONAPI.error(res))
     }
 
@@ -79,7 +85,7 @@ GenericRoute.post('/:collection', (req, res, next) => {
         .insertMany(resources)
         .then(getPost)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -91,7 +97,7 @@ GenericRoute.get('/:collection/:id', (req, res, next) => {
         .collection(collection)
         .findOne({ _id: objectId(id) })
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -117,7 +123,7 @@ GenericRoute.patch('/:collection/:id', (req, res, next) => {
         })
         .then(getUpdateResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -143,7 +149,7 @@ GenericRoute.put('/:collection/:id', (req, res, next) => {
         })
         .then(getUpdateResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 
@@ -156,7 +162,7 @@ GenericRoute.delete('/:collection/:id', (req, res, next) => {
         .findOneAndDelete({ _id: objectId(id) })
         .then(getUpdateResult)
         .then(JSONAPI.response(res))
-        .then(next)
+        .then(() => next())
         .catch(JSONAPI.error(res))
 })
 

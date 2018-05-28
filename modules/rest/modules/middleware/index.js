@@ -25,9 +25,5 @@ module.exports = ({ getDB }) => [
         req.db = db
         req.parsedQuery = queryParser.parse(req.query || {})
 
-        if (req.params && req.params.id) {
-            req.params.id = new ObjectId(id)
-        }
-
         return next()
     }]

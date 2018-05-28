@@ -1,6 +1,30 @@
 const { Router } = require('express')
-
+const { ObjectId } = require('mongodb')
 const GenericRoute = new Router()
+
+const DB_ERROR = () => {
+    const err =new Error('DB_ERROR')
+    
+    err.code = 500
+
+    return err
+}
+
+const getPost = ({ ops, result }) => {
+    if (!result.ok) {
+        throw DB_ERROR()
+    }
+
+    return ops
+}
+
+const getUpdateResult = ({ value, ok }) => {
+    if(!ok) {
+        throw DB_ERROR()
+    }
+
+    return value
+}
 
 GenericRoute.get('/', (req, res) => {
     req.db.listCollections()
@@ -35,6 +59,7 @@ GenericRoute.get('/:collection', (req, res) => {
 GenericRoute.delete('/:collection', (req, res) => {
     req.db.collection(req.params.collection)
         .drop()
+        .then(getResult)
         .then(data => res.json({ data }))
         .catch(error => res.status(400).json({
             error: {
@@ -61,15 +86,8 @@ GenericRoute.post('/:collection', (req, res) => {
         return req.db
             .collection(collection)
             .insertOne(resource)
-            .then(({ ops, result }) => {
-                if(!result.ok) {
-                    throw new Error('INSERT_ERROR')
-                }
-
-                res.json({
-                    data: ops
-                })
-            })
+            .then(getPost)
+            .then(data => res.json({ data }))
             .catch(error => res.status(400).json({
                 error: {
                     message: error.message
@@ -78,23 +96,24 @@ GenericRoute.post('/:collection', (req, res) => {
     }
 
     return req.db
-            .collection(collection)
-            .insertMany(resources)
-            .then(data => res.json({ data }))
-            .catch(error => res.status(400).json({
-                error: {
-                    message: error.message
-                }
-            }))
+        .collection(collection)
+        .insertMany(resources)
+        .then(getPost)
+        .then(data => res.json({ data }))
+        .catch(error => res.status(400).json({
+            error: {
+                message: error.message
+            }
+        }))
 })
 
 // Gets a single resource by ID
 GenericRoute.get('/:collection/:id', (req, res) => {
     const { collection, id } = req.params
-    
+    console.log(id, 'id?')
     req.db
         .collection(collection)
-        .findOne({ _id: id })
+        .findOne({ _id: new ObjectId(id) })
         .then(data => res.json({ data }))
         .catch(error => res.status(400).json({
             error: {
@@ -110,10 +129,11 @@ GenericRoute.patch('/:collection/:id', (req, res) => {
 
     req.db
         .collection(collection)
-        .findOneAndUpdate({ _id: id }, update, {
+        .findOneAndUpdate({ _id: new ObjectId(id) }, update, {
             upsert: true,
             returnOriginal: false
         })
+        .then(getUpdateResult)
         .then(data => res.json({ data }))
         .catch(error => res.status(400).json({
             error: {
@@ -129,10 +149,11 @@ GenericRoute.put('/:collection/:id', (req, res) => {
 
     req.db
         .collection(collection)
-        .findOneAndReplace({ _id: id }, replacement, {
+        .findOneAndReplace({ _id: new ObjectId(id) }, replacement, {
             upsert: true,
             returnOriginal: false
         })
+        .then(getUpdateResult)
         .then(data => res.json({ data }))
         .catch(error => res.status(400).json({
             error: {
@@ -146,8 +167,9 @@ GenericRoute.delete('/:collection/:id', (req, res) => {
     const { collection, id } = req.params
 
     req.db
-        .collect(collection)
-        .findOneAndDelete({ _id: id })
+        .collection(collection)
+        .findOneAndDelete({ _id: new ObjectId(id) })
+        .then(getUpdateResult)
         .then(data => res.json({ data }))
         .catch(error => res.status(400).json({
             error: {

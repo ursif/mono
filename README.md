@@ -25,17 +25,20 @@ You will now have to go into each `module` and run `yarn start`. _**Note**_: Thi
 * `@usrif/auth`: An authorization service for creating opaque reference tokens for clients and JWTs for internal services
 * `@ursif/logger`: A helper module for logging ( _not for Event Sourcing_ )
 * `@ursif/user`: A service for keeping the state of the User
-* `@ursif/posts`: A service for keeping the state of the Posts of the User
-* `@ursif/messages`: A service for keeping the state of the Messages of the User
+* `@ursif/rest`: A service for CRUD updates to a View of a service's state
+* `@ursif/events`: A service for Actor-esqueue state handling
+* `@ursif/bus`: A service for connecting to and interacting with a Redis message bus
+* `@ursif/queue`: A helper module for interacting with a Redis Queue
 * `@ursif/graph`: A service for connecting many `ursif` networks
 * `@ursif/dashboard`: A service for viewing the `@ursif/graph` of different networks
 
 ## TODO
 
 * [x] - Auth Service Skeleton
-* [x] - Posts Service Skeleton
+* [x] - REST Service Skeleton
 * [x] - Logger Skeleton
-* [ ] - User Service Skeleton
+* [x] - Events Service Skeleton
+* [x] - Bus Service Skeleton
 * [ ] - Messages Service Skeleton
 * [ ] - Dashboard Service Skeleton
 

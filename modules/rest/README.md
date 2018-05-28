@@ -1,8 +1,8 @@
-# ursif/posts
+# ursif/rest
 
 ## Overview
 
-This module is a wrapper on top of MongoDB for storing a user's posts. There is no schema nor enforcement or validation of any kind. It is up to a consumer/user of this package to implement those things. This module is aimed at offering a simple interface for CRUD events on a collection type and creating/removing collections.
+This module is a wrapper on top of MongoDB for storing a user's data There is no schema nor enforcement or validation of any kind. It is up to a consumer/user of this package to implement those things. This module is aimed at offering a simple interface for CRUD events on a collection type and creating/removing collections.
 
 ## API
 

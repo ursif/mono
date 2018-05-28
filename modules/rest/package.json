@@ -1,19 +1,21 @@
 {
-  "name": "posts",
-  "version": "1.0.0",
+  "name": "@ursif/rest",
+  "version": "0.0.0",
   "main": "index.js",
+  "description": "A REST interface to a MongoDB instance",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "mongo-querystring": "^4.1.1",
     "mongodb": "^3.1.0-beta4",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"
   },
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon example.js"
   }
 }

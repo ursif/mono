@@ -1,15 +1,14 @@
 {
-  "name": "ursif",
+  "name": "@ursif/mono",
   "version": "0.0.0",
   "main": "index.js",
+  "description": "A blogging platform built using microservices",
   "author": "Tim Roberts <timiroberts@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "lerna": "^2.11.0"
   },
   "scripts": {
-    "start": "docker-compose up",
-    "start:auth": "node modules/auth/index.js",
-    "start:posts": "node modules/posts/index.js"
+    "start": "docker-compose up"
   }
 }
